@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import goldenGlitterHeart from '@/assets/golden-glitter-heart.png';
+import goldenGlitterHeart from '@/assets/golden-glitter-heart8.png';
+import whiteHeart from '@/assets/white_hart.png';
 
 interface GlitterParticle {
   id: number;
@@ -26,7 +27,6 @@ const ScratchCard: React.FC<ScratchCardProps> = ({
   onComplete,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const glitterCanvasRef = useRef<HTMLCanvasElement>(null);
   const [isScratching, setIsScratching] = useState(false);
   const [isRevealed, setIsRevealed] = useState(false);
   const [scratchPercent, setScratchPercent] = useState(0);
@@ -86,7 +86,7 @@ const ScratchCard: React.FC<ScratchCardProps> = ({
     };
   }, [particles.length > 0]);
 
-  // Heart shape path
+  // Heart shape path for clipping
   const heartPath = `
     M ${width/2} ${height * 0.92}
     C ${width * 0.15} ${height * 0.65} ${width * 0.05} ${height * 0.4} ${width * 0.05} ${height * 0.3}
@@ -111,23 +111,12 @@ const ScratchCard: React.FC<ScratchCardProps> = ({
     const img = new Image();
     img.src = goldenGlitterHeart;
     img.onload = () => {
-      // Create heart path for clipping
+      // Draw the golden glitter heart image directly without clipping
+      // This will cover the entire canvas area
+      ctx.drawImage(img, 0, 0, width, height);
+      
+      // Add subtle highlight overlay for depth
       const path = new Path2D(heartPath);
-      
-      // Clip to heart shape and draw the glitter image WITHOUT shadow
-      ctx.save();
-      ctx.clip(path);
-      
-      // Draw golden glitter heart image slightly larger to ensure full coverage
-      const scale = 1.2;
-      const offsetX = (width * scale - width) / 2;
-      const offsetY = (height * scale - height) / 2;
-      
-      ctx.drawImage(img, -offsetX, -offsetY, width * scale, height * scale);
-      
-      ctx.restore();
-      
-      // Add subtle highlight overlay for 3D embossed look
       ctx.save();
       ctx.clip(path);
       const highlightGradient = ctx.createLinearGradient(0, 0, width * 0.5, height * 0.5);
@@ -192,7 +181,6 @@ const ScratchCard: React.FC<ScratchCardProps> = ({
     const percent = (transparentPixels / (pixels.length / 4)) * 100;
     setScratchPercent(percent);
     
-    // Mark as revealed when user has scratched enough
     if (percent > 50 && !isRevealed) {
       setIsRevealed(true);
       onComplete?.();
@@ -222,57 +210,13 @@ const ScratchCard: React.FC<ScratchCardProps> = ({
       className="relative select-none"
       style={{ width, height }}
     >
-      {/* 3D Embossed white heart with revealed content */}
+      {/* White heart image background with revealed content */}
       <div className="absolute inset-0">
-        <svg width={width} height={height} className="absolute inset-0">
-          <defs>
-            <clipPath id="heartClip">
-              <path d={heartPath} />
-            </clipPath>
-            
-            {/* Inset/Recessed 3D filter - carved INTO the surface */}
-            <filter id="emboss3d" x="-50%" y="-50%" width="200%" height="200%">
-              {/* Inner shadow (top-left) to create recessed look */}
-              <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
-              <feOffset dx="-2" dy="-2" result="offsetblur1"/>
-              <feFlood floodColor="#000000" floodOpacity="0.3"/>
-              <feComposite in2="offsetblur1" operator="in" result="innershadow1"/>
-              
-              {/* Inner shadow (bottom-right) for depth */}
-              <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
-              <feOffset dx="1" dy="1" result="offsetblur2"/>
-              <feFlood floodColor="#ffffff" floodOpacity="0.6"/>
-              <feComposite in2="offsetblur2" operator="in" result="innershadow2"/>
-              
-              {/* Combine shadows */}
-              <feMerge>
-                <feMergeNode in="innershadow1"/>
-                <feMergeNode in="innershadow2"/>
-                <feMergeNode in="SourceGraphic"/>
-              </feMerge>
-            </filter>
-            
-            {/* Gradient for recessed/carved look */}
-            <linearGradient id="whiteHeartGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#e8e8e8"/>
-              <stop offset="25%" stopColor="#f0f0f0"/>
-              <stop offset="50%" stopColor="#f5f5f5"/>
-              <stop offset="75%" stopColor="#f8f8f8"/>
-              <stop offset="100%" stopColor="#ffffff"/>
-            </linearGradient>
-          </defs>
-          
-          {/* Main white heart with inset/recessed gradient */}
-          <path d={heartPath} fill="url(#whiteHeartGradient)" filter="url(#emboss3d)" />
-          
-          {/* Dark inner edge for carved-in effect */}
-          <path 
-            d={heartPath} 
-            fill="none" 
-            stroke="rgba(0,0,0,0.1)" 
-            strokeWidth="1"
-          />
-        </svg>
+        <img 
+          src={whiteHeart} 
+          alt="Heart background" 
+          className="absolute inset-0 w-full h-full object-contain"
+        />
         
         {/* Revealed content inside heart */}
         <div 
@@ -289,7 +233,7 @@ const ScratchCard: React.FC<ScratchCardProps> = ({
               color: '#7A7A7A', 
               marginBottom: '2px', 
               lineHeight: '1.2',
-              fontFamily: "'Playfair Display', 'Cormorant Garamond', 'Didot', serif"
+              fontFamily: "'Playfair Display', 'Cormorant Garamond', 'Didot', 'Bodoni Moda', serif"
             }}
           >
             invite you to celebrate
@@ -300,7 +244,7 @@ const ScratchCard: React.FC<ScratchCardProps> = ({
               color: '#7A7A7A', 
               marginBottom: '8px', 
               lineHeight: '1.2',
-              fontFamily: "'Playfair Display', 'Cormorant Garamond', 'Didot', serif"
+              fontFamily: "'Playfair Display', 'Cormorant Garamond', 'Didot', 'Bodoni Moda', serif"
             }}
           >
             wedding on
@@ -312,7 +256,7 @@ const ScratchCard: React.FC<ScratchCardProps> = ({
               color: '#000000', 
               marginBottom: '4px', 
               lineHeight: '1',
-              fontFamily: "'Playfair Display', 'Bodoni Moda', 'Didot', serif"
+              fontFamily: "'Playfair Display', 'Bodoni Moda', 'Didot', 'Cormorant Garamond', serif"
             }}
           >
             22 | 23 | 25
@@ -324,7 +268,7 @@ const ScratchCard: React.FC<ScratchCardProps> = ({
               color: '#000000', 
               marginBottom: '8px', 
               lineHeight: '1',
-              fontFamily: "'Playfair Display', 'Bodoni Moda', 'Didot', serif"
+              fontFamily: "'Playfair Display', 'Bodoni Moda', 'Didot', 'Cormorant Garamond', serif"
             }}
           >
             April, 2026
@@ -334,7 +278,7 @@ const ScratchCard: React.FC<ScratchCardProps> = ({
             className="text-[10px] sm:text-xs tracking-widest uppercase"
             style={{ 
               color: '#6B6B6B',
-              fontFamily: "'Montserrat', 'Raleway', sans-serif",
+              fontFamily: "'Playfair Display', 'Bodoni Moda', 'Cormorant Garamond', 'Didot', serif",
               letterSpacing: '0.15em'
             }}
           >
@@ -345,7 +289,7 @@ const ScratchCard: React.FC<ScratchCardProps> = ({
             className="italic text-[10px] sm:text-xs mt-3 tracking-wide font-bold save-the-date-text"
             style={{ 
               color: '#7A7A7A',
-              fontFamily: "'Playfair Display', 'Cormorant Garamond', serif"
+              fontFamily: "'Playfair Display', 'Cormorant Garamond', 'Didot', 'Bodoni Moda', serif"
             }}
           >
             Save the Date
@@ -353,7 +297,7 @@ const ScratchCard: React.FC<ScratchCardProps> = ({
         </div>
       </div>
       
-      {/* 3D Gold scratch overlay canvas - NO DROP SHADOW */}
+      {/* Gold scratch overlay canvas */}
       <canvas
         ref={canvasRef}
         width={width}
