@@ -114,17 +114,11 @@ const ScratchCard: React.FC<ScratchCardProps> = ({
       // Create heart path for clipping
       const path = new Path2D(heartPath);
       
-      // Clip to heart shape and draw YOUR glitter image
+      // Clip to heart shape and draw the glitter image WITHOUT shadow
       ctx.save();
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-      ctx.shadowBlur = 15;
-      ctx.shadowOffsetX = 5;
-      ctx.shadowOffsetY = 8;
-      
       ctx.clip(path);
       
-      // Draw YOUR golden glitter heart image slightly larger to ensure full coverage
-      // Scale it 120% to make sure there are absolutely no gaps anywhere
+      // Draw golden glitter heart image slightly larger to ensure full coverage
       const scale = 1.2;
       const offsetX = (width * scale - width) / 2;
       const offsetY = (height * scale - height) / 2;
@@ -186,6 +180,7 @@ const ScratchCard: React.FC<ScratchCardProps> = ({
     // Spawn glitter when scratching
     spawnGlitter(x, y);
 
+    // Calculate scratch percentage
     const imageData = ctx.getImageData(0, 0, width, height);
     const pixels = imageData.data;
     let transparentPixels = 0;
@@ -197,10 +192,9 @@ const ScratchCard: React.FC<ScratchCardProps> = ({
     const percent = (transparentPixels / (pixels.length / 4)) * 100;
     setScratchPercent(percent);
     
+    // Mark as revealed when user has scratched enough
     if (percent > 50 && !isRevealed) {
       setIsRevealed(true);
-      canvas.style.transition = 'opacity 0.6s ease-out';
-      canvas.style.opacity = '0';
       onComplete?.();
     }
   };
@@ -236,82 +230,47 @@ const ScratchCard: React.FC<ScratchCardProps> = ({
               <path d={heartPath} />
             </clipPath>
             
-            {/* Enhanced 3D filter with multiple shadows for depth */}
+            {/* Inset/Recessed 3D filter - carved INTO the surface */}
             <filter id="emboss3d" x="-50%" y="-50%" width="200%" height="200%">
-              {/* Deep outer shadow for depth */}
-              <feGaussianBlur in="SourceAlpha" stdDeviation="8"/>
-              <feOffset dx="6" dy="10" result="offsetblur1"/>
-              <feFlood floodColor="#666666" floodOpacity="0.5"/>
-              <feComposite in2="offsetblur1" operator="in" result="shadow1"/>
-              
-              {/* Medium shadow */}
-              <feGaussianBlur in="SourceAlpha" stdDeviation="4"/>
-              <feOffset dx="3" dy="5" result="offsetblur2"/>
-              <feFlood floodColor="#888888" floodOpacity="0.4"/>
-              <feComposite in2="offsetblur2" operator="in" result="shadow2"/>
-              
-              {/* Soft inner shadow for concave feel */}
+              {/* Inner shadow (top-left) to create recessed look */}
               <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
-              <feOffset dx="-1" dy="-1" result="offsetblur3"/>
-              <feFlood floodColor="#000000" floodOpacity="0.15"/>
-              <feComposite in2="offsetblur3" operator="in" result="shadow3"/>
+              <feOffset dx="-2" dy="-2" result="offsetblur1"/>
+              <feFlood floodColor="#000000" floodOpacity="0.3"/>
+              <feComposite in2="offsetblur1" operator="in" result="innershadow1"/>
               
-              {/* Combine all shadows */}
+              {/* Inner shadow (bottom-right) for depth */}
+              <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+              <feOffset dx="1" dy="1" result="offsetblur2"/>
+              <feFlood floodColor="#ffffff" floodOpacity="0.6"/>
+              <feComposite in2="offsetblur2" operator="in" result="innershadow2"/>
+              
+              {/* Combine shadows */}
               <feMerge>
-                <feMergeNode in="shadow1"/>
-                <feMergeNode in="shadow2"/>
-                <feMergeNode in="shadow3"/>
+                <feMergeNode in="innershadow1"/>
+                <feMergeNode in="innershadow2"/>
                 <feMergeNode in="SourceGraphic"/>
               </feMerge>
             </filter>
             
-            {/* Enhanced gradient for more depth */}
+            {/* Gradient for recessed/carved look */}
             <linearGradient id="whiteHeartGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#ffffff"/>
-              <stop offset="25%" stopColor="#fafafa"/>
+              <stop offset="0%" stopColor="#e8e8e8"/>
+              <stop offset="25%" stopColor="#f0f0f0"/>
               <stop offset="50%" stopColor="#f5f5f5"/>
-              <stop offset="75%" stopColor="#efefef"/>
-              <stop offset="100%" stopColor="#e5e5e5"/>
+              <stop offset="75%" stopColor="#f8f8f8"/>
+              <stop offset="100%" stopColor="#ffffff"/>
             </linearGradient>
-            
-            {/* Radial gradient for center highlight */}
-            <radialGradient id="heartHighlight" cx="40%" cy="35%">
-              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.4"/>
-              <stop offset="50%" stopColor="#ffffff" stopOpacity="0.1"/>
-              <stop offset="100%" stopColor="#ffffff" stopOpacity="0"/>
-            </radialGradient>
           </defs>
           
-          {/* Multiple shadow layers for enhanced 3D depth */}
-          <path d={heartPath} fill="#a0a0a0" transform="translate(8, 12)" style={{ filter: 'blur(8px)', opacity: 0.3 }} />
-          <path d={heartPath} fill="#c0c0c0" transform="translate(4, 6)" style={{ filter: 'blur(4px)', opacity: 0.4 }} />
-          
-          {/* Main 3D white heart with gradient */}
+          {/* Main white heart with inset/recessed gradient */}
           <path d={heartPath} fill="url(#whiteHeartGradient)" filter="url(#emboss3d)" />
           
-          {/* Top-left highlight for raised embossed effect */}
-          <path 
-            d={heartPath} 
-            fill="url(#heartHighlight)"
-            style={{ mixBlendMode: 'overlay' }}
-          />
-          
-          {/* Sharp top edge highlight */}
+          {/* Dark inner edge for carved-in effect */}
           <path 
             d={heartPath} 
             fill="none" 
-            stroke="rgba(255,255,255,0.9)" 
-            strokeWidth="1.5"
-            transform="translate(-0.5, -0.5)"
-          />
-          
-          {/* Bottom-right subtle dark edge for depth */}
-          <path 
-            d={heartPath} 
-            fill="none" 
-            stroke="rgba(0,0,0,0.08)" 
+            stroke="rgba(0,0,0,0.1)" 
             strokeWidth="1"
-            transform="translate(1, 1)"
           />
         </svg>
         
@@ -325,57 +284,81 @@ const ScratchCard: React.FC<ScratchCardProps> = ({
           }}
         >
           <p 
-            className="font-serif italic text-xs sm:text-sm tracking-wide leading-tight"
-            style={{ color: '#7A7A7A' }}
+            className="italic text-xs sm:text-sm tracking-wide"
+            style={{ 
+              color: '#7A7A7A', 
+              marginBottom: '2px', 
+              lineHeight: '1.2',
+              fontFamily: "'Playfair Display', 'Cormorant Garamond', 'Didot', serif"
+            }}
           >
             invite you to celebrate
           </p>
           <p 
-            className="font-serif italic text-xs sm:text-sm tracking-wide"
-            style={{ color: '#7A7A7A' }}
+            className="italic text-xs sm:text-sm tracking-wide"
+            style={{ 
+              color: '#7A7A7A', 
+              marginBottom: '8px', 
+              lineHeight: '1.2',
+              fontFamily: "'Playfair Display', 'Cormorant Garamond', 'Didot', serif"
+            }}
           >
             wedding on
           </p>
           
           <p 
-            className="font-serif text-xl sm:text-2xl font-bold mt-3 tracking-wider"
-            style={{ color: '#000000' }}
+            className="text-base sm:text-lg font-bold tracking-wide"
+            style={{ 
+              color: '#000000', 
+              marginBottom: '4px', 
+              lineHeight: '1',
+              fontFamily: "'Playfair Display', 'Bodoni Moda', 'Didot', serif"
+            }}
           >
-            22, 23, 25
+            22 | 23 | 25
           </p>
           
           <p 
-            className="font-serif text-lg sm:text-xl font-semibold tracking-wider"
-            style={{ color: '#000000' }}
+            className="text-sm sm:text-base font-semibold tracking-wide"
+            style={{ 
+              color: '#000000', 
+              marginBottom: '8px', 
+              lineHeight: '1',
+              fontFamily: "'Playfair Display', 'Bodoni Moda', 'Didot', serif"
+            }}
           >
-            April 2026
+            April, 2026
           </p>
           
           <p 
-            className="font-sans text-[10px] sm:text-xs tracking-widest mt-2 uppercase"
-            style={{ color: '#6B6B6B' }}
+            className="text-[10px] sm:text-xs tracking-widest uppercase"
+            style={{ 
+              color: '#6B6B6B',
+              fontFamily: "'Montserrat', 'Raleway', sans-serif",
+              letterSpacing: '0.15em'
+            }}
           >
             New Delhi, India
           </p>
           
           <p 
-            className="font-serif italic text-[10px] sm:text-xs mt-3 tracking-wide font-bold save-the-date-text"
-            style={{ color: '#7A7A7A' }}
+            className="italic text-[10px] sm:text-xs mt-3 tracking-wide font-bold save-the-date-text"
+            style={{ 
+              color: '#7A7A7A',
+              fontFamily: "'Playfair Display', 'Cormorant Garamond', serif"
+            }}
           >
             Save the Date
           </p>
         </div>
       </div>
       
-      {/* 3D Gold scratch overlay canvas */}
+      {/* 3D Gold scratch overlay canvas - NO DROP SHADOW */}
       <canvas
         ref={canvasRef}
         width={width}
         height={height}
         className="absolute inset-0 cursor-pointer touch-none z-20"
-        style={{ 
-          filter: 'drop-shadow(4px 6px 8px rgba(0,0,0,0.3))'
-        }}
         onMouseDown={handleStart}
         onMouseMove={handleMove}
         onMouseUp={handleEnd}
