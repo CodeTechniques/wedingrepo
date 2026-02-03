@@ -236,7 +236,7 @@ const ScratchCard: React.FC<ScratchCardProps> = ({
               fontFamily: "'Playfair Display', 'Cormorant Garamond', 'Didot', 'Bodoni Moda', serif"
             }}
           >
-            invite you to celebrate
+         Join us, 
           </p>
           <p 
             className="italic text-xs sm:text-sm tracking-wide"
@@ -247,7 +247,7 @@ const ScratchCard: React.FC<ScratchCardProps> = ({
               fontFamily: "'Playfair Display', 'Cormorant Garamond', 'Didot', 'Bodoni Moda', serif"
             }}
           >
-            wedding on
+          as our forever begins
           </p>
           
           <p 
@@ -292,7 +292,7 @@ const ScratchCard: React.FC<ScratchCardProps> = ({
               fontFamily: "'Playfair Display', 'Cormorant Garamond', 'Didot', 'Bodoni Moda', serif"
             }}
           >
-            Save the Date
+  
           </p>
         </div>
       </div>
