@@ -14,11 +14,11 @@ const Index = () => {
         Save The Date
       </h1>
 
-      {/* Center: Scratch card heart */}
+      {/* Center: Scratch card heart - INCREASED SIZE */}
       <div className="relative z-10">
         <ScratchCard
-          width={280}
-          height={260}
+          width={320}
+          height={300}
           onComplete={() => setIsRevealed(true)}
         />
       </div>

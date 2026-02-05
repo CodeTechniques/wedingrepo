@@ -218,17 +218,17 @@ const ScratchCard: React.FC<ScratchCardProps> = ({
           className="absolute inset-0 w-full h-full object-contain"
         />
         
-        {/* Revealed content inside heart */}
+        {/* Revealed content inside heart - OPTIMIZED TEXT SIZES */}
         <div 
-          className="absolute inset-0 flex flex-col items-center justify-center text-center px-6"
+          className="absolute inset-0 flex flex-col items-center justify-center text-center px-8"
           style={{ 
             clipPath: `path('${heartPath}')`,
-            paddingTop: '15%',
-            paddingBottom: '10%'
+            paddingTop: '18%',
+            paddingBottom: '12%'
           }}
         >
           <p 
-            className="italic text-xs sm:text-sm tracking-wide"
+            className="italic text-sm sm:text-base tracking-wide"
             style={{ 
               color: '#7A7A7A', 
               marginBottom: '2px', 
@@ -239,10 +239,10 @@ const ScratchCard: React.FC<ScratchCardProps> = ({
          Join us, 
           </p>
           <p 
-            className="italic text-xs sm:text-sm tracking-wide"
+            className="italic text-sm sm:text-base tracking-wide"
             style={{ 
               color: '#7A7A7A', 
-              marginBottom: '8px', 
+              marginBottom: '10px', 
               lineHeight: '1.2',
               fontFamily: "'Playfair Display', 'Cormorant Garamond', 'Didot', 'Bodoni Moda', serif"
             }}
@@ -251,22 +251,22 @@ const ScratchCard: React.FC<ScratchCardProps> = ({
           </p>
           
           <p 
-            className="text-base sm:text-lg font-bold tracking-wide"
+            className="text-xl sm:text-2xl font-bold tracking-wide"
             style={{ 
               color: '#000000', 
-              marginBottom: '4px', 
+              marginBottom: '5px', 
               lineHeight: '1',
               fontFamily: "'Playfair Display', 'Bodoni Moda', 'Didot', 'Cormorant Garamond', serif"
             }}
           >
-            22 | 23 
+            22 | 23
           </p>
           
           <p 
-            className="text-sm sm:text-base font-semibold tracking-wide"
+            className="text-base sm:text-lg font-semibold tracking-wide"
             style={{ 
               color: '#000000', 
-              marginBottom: '8px', 
+              marginBottom: '10px', 
               lineHeight: '1',
               fontFamily: "'Playfair Display', 'Bodoni Moda', 'Didot', 'Cormorant Garamond', serif"
             }}
@@ -275,7 +275,7 @@ const ScratchCard: React.FC<ScratchCardProps> = ({
           </p>
           
           <p 
-            className="text-[10px] sm:text-xs tracking-widest uppercase"
+            className="text-xs sm:text-sm tracking-widest uppercase"
             style={{ 
               color: '#6B6B6B',
               fontFamily: "'Playfair Display', 'Bodoni Moda', 'Cormorant Garamond', 'Didot', serif",
@@ -286,7 +286,7 @@ const ScratchCard: React.FC<ScratchCardProps> = ({
           </p>
           
           <p 
-            className="italic text-[10px] sm:text-xs mt-3 tracking-wide font-bold save-the-date-text"
+            className="italic text-xs sm:text-sm mt-3 tracking-wide font-bold save-the-date-text"
             style={{ 
               color: '#7A7A7A',
               fontFamily: "'Playfair Display', 'Cormorant Garamond', 'Didot', 'Bodoni Moda', serif"
